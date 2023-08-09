@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="/script.js" defer></script>
+    <title>Drawing Board</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="toolbox">
+        <label for="color"
+          >Color
+          <input type="color" name="color" id="color" />
+        </label>
+        <label for="line-width">
+          Line Stroke
+          <input type="number" name="line-width" value="5" />
+        </label>
+        <label for="image">
+          Image
+          <input type="file" name="image" class="file" />
+          <button class="image-button">Image</button>
+        </label>
+        <button class="save">Save</button>
+        <button id="clear">Clear</button>
+      </div>
+      <img src="" id="image" alt="" />
+      <div class="board">
+        <canvas id="drawing-board"></canvas>
+      </div>
+    </div>
+  </body>
+</html>
