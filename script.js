@@ -1,18 +1,23 @@
 const canvas = document.querySelector("#drawing-board");
 const clear = document.querySelector("#clear");
 const toolbox = document.querySelector(".toolbox");
-const image = document.querySelector("#image");
 const imagebutton = document.querySelector(".image-button");
 const file_input = document.querySelector(".file");
 const Save = document.querySelector(".save");
 const shapeSelect = document.querySelector("#shape-select");
+const board = document.querySelector(".board");
 const ctx = canvas.getContext("2d");
-const canvasOffsetX = 200;
-const canvasOffsetY = 0;
-const cWidth = window.innerWidth - canvasOffsetX;
-const cHeight = window.innerHeight - canvasOffsetY;
-canvas.width = cWidth;
-canvas.height = cHeight;
+
+const toolboxDimesions = toolbox.getBoundingClientRect();
+function setDimesions() {
+  const boardDimesions = board.getBoundingClientRect();
+
+  const cWidth = boardDimesions.width;
+  const cHeight = boardDimesions.height;
+  canvas.width = cWidth;
+  canvas.height = cHeight;
+}
+setDimesions();
 let isPainting = false;
 let lineWidth = 5;
 let startX;
@@ -21,18 +26,19 @@ function draw(e) {
   if (!isPainting) return;
   ctx.lineWidth = lineWidth;
   ctx.lineCap = "round";
-  ctx.lineTo(e.clientX - canvasOffsetX, e.clientY);
+  ctx.lineTo(e.clientX - toolboxDimesions.width, e.clientY);
   ctx.stroke();
 }
 function DrawImage(file, cb) {
   if (!file) return;
   const reader = new FileReader();
+  const img = new Image();
   reader.onload = (e) => {
-    image.src = e.target.result;
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
-  image.onload = () => {
-    return cb(image);
+  img.onload = () => {
+    return cb(img);
   };
 }
 imagebutton.addEventListener("click", () => {

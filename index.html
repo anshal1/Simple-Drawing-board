@@ -4,29 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Azeret+Mono:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
     <script src="./script.js" defer></script>
     <title>Drawing Board</title>
   </head>
   <body>
     <div class="container">
       <div class="toolbox">
-        <label for="color"
-          >Color
+        <label for="color" class="label">
+          <span> Color </span>
           <input type="color" name="color" id="color" />
         </label>
-        <label for="line-width">
-          Line Stroke
-          <input type="number" name="line-width" value="5" />
+        <label for="line-width" class="label">
+          <span> Line Stroke </span>
+          <input type="number" name="line-width" value="5" class="input" />
         </label>
-        <label for="image">
-          Image
+        <label for="image" class="label">
+          <span> Image </span>
           <input type="file" name="image" class="file" />
-          <button class="image-button">Image</button>
+          <button class="image-button button">Image</button>
         </label>
-        <button class="save">Save</button>
-        <button id="clear">Clear</button>
+        <button class="save button">Save</button>
+        <button id="clear" class="button">Clear</button>
       </div>
-      <img src="" id="image" alt="" />
       <div class="board">
         <canvas id="drawing-board"></canvas>
       </div>
