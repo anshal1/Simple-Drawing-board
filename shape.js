@@ -21,6 +21,10 @@ function clearPreviewCanvas() {
   previewctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
 }
 
+function getID() {
+  return `${currentShape}${Date.now()}`;
+}
+
 function drawSquare(startX, startY, e, draw = false) {
   if (!isPainting) return;
   const width = e.clientX - startX;
@@ -28,7 +32,7 @@ function drawSquare(startX, startY, e, draw = false) {
   const x = startX - toolboxDimesions.width;
   if (draw) {
     clearPreviewCanvas();
-    const id = `${currentShape}${Date.now()}`;
+    const id = getID();
     // saving the shape so that we can change its color in future if user wants
     shapesMap.set(id, {
       x,
