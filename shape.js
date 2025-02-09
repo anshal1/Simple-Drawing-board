@@ -1,14 +1,10 @@
 const shapes = document.querySelectorAll(".shapes-buttons");
-const toolbox = document.querySelector(".toolbox");
 const color = document.querySelector("#color");
 const lineHeight = document.querySelector("input[name='line-width']");
-const previewCanvas = document.querySelector("#previewCanvas");
-const toolboxDimesions = toolbox.getBoundingClientRect();
 
 let currentShape = null;
 
 const shapesMap = new Map();
-const previewctx = previewCanvas.getContext("2d");
 
 shapes.forEach((shape) => {
   shape.addEventListener("click", () => {
@@ -16,14 +12,6 @@ shapes.forEach((shape) => {
     currentShape = shapename;
   });
 });
-
-function clearPreviewCanvas() {
-  previewctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-}
-
-function getID() {
-  return `${currentShape}${Date.now()}`;
-}
 
 function drawSquare(startX, startY, e, draw = false) {
   if (!isPainting) return;
@@ -62,7 +50,7 @@ function drawLine(startX, startY, e, draw = false) {
   const x = startX - toolboxDimesions.width;
   const y = startY;
   const width = e.clientX - toolboxDimesions.width;
-  ctx.lineWidth = lineHeight;
+  ctx.lineWidth = lineHeight.value;
   ctx.lineCap = "round";
   if (!draw) {
     // Preview mode

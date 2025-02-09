@@ -1,16 +1,9 @@
-const canvas = document.querySelector("#drawing-board");
 const clear = document.querySelector("#clear");
 const imagebutton = document.querySelector(".image-button");
 const file_input = document.querySelector(".file");
 const Save = document.querySelector(".save");
 const shapeSelect = document.querySelector("#shape-select");
 const board = document.querySelector(".board");
-
-const ctx = canvas.getContext("2d");
-let isPainting = false;
-let lineWidth = 5;
-let startX;
-let startY;
 
 function setDimesions() {
   const boardDimesions = board.getBoundingClientRect();
@@ -24,6 +17,7 @@ function setDimesions() {
 }
 setDimesions();
 
+// function to draw the pencil
 function draw(e) {
   if (!isPainting) return;
   ctx.lineWidth = lineWidth;
@@ -44,28 +38,37 @@ function DrawImage(file, cb) {
     return cb(img);
   };
 }
+
 imagebutton.addEventListener("click", () => {
   file_input.click();
 });
+
 toolbox.addEventListener("change", (e) => {
-  if (e.target.name === "color") {
-    ctx.strokeStyle = e.target.value;
-    ctx.fillStyle = e.target.value;
-  }
-  if (e.target.name === "line-width") {
-    lineWidth = e.target.value;
-  }
-  if (e.target.name === "image") {
-    DrawImage(e.target.files[0], (element) => {
-      ctx.drawImage(element, 0, 0, canvas.width, canvas.height);
-    });
+  switch (e.target.name) {
+    case "color":
+      ctx.strokeStyle = e.target.value;
+      ctx.fillStyle = e.target.value;
+      break;
+    case "line-width":
+      lineWidth = e.target.value;
+      break;
+    case "image":
+      DrawImage(e.target.files[0], (element) => {
+        ctx.drawImage(element, 0, 0, canvas.width, canvas.height);
+      });
+      break;
   }
 });
 
 toolbox.addEventListener("click", (e) => {
   const name = e.target.name;
-  if (name === "pencil-tool") {
-    currentShape = null;
+  switch (name) {
+    case "pencil-tool":
+      currentShape = null;
+      break;
+    case "eraser":
+      isEraserSelected = !isEraserSelected;
+      break;
   }
 });
 
@@ -76,7 +79,11 @@ clear.addEventListener("click", () => {
 canvas.addEventListener("mousedown", (e) => {
   startX = e.clientX;
   startY = e.clientY;
-  isPainting = true;
+  if (isEraserSelected) {
+    isErasing = true;
+  } else {
+    isPainting = true;
+  }
 });
 
 function shapesSwithCase(e, draw = false) {
@@ -93,6 +100,10 @@ function shapesSwithCase(e, draw = false) {
 }
 
 canvas.addEventListener("mouseup", (e) => {
+  if (isEraserSelected) {
+    isErasing = false;
+    return;
+  }
   if (currentShape) {
     shapesSwithCase(e, true);
     isPainting = false;
@@ -108,6 +119,8 @@ canvas.addEventListener("mouseup", (e) => {
 });
 
 canvas.addEventListener("mousemove", (e) => {
+  // using isEraserSelected instead of isErasing to show th eraser moving with the cursor
+  if (isEraserSelected) return eraseCanvas(e);
   if (currentShape) {
     shapesSwithCase(e, false);
   } else {
@@ -115,7 +128,7 @@ canvas.addEventListener("mousemove", (e) => {
   }
 });
 canvas.addEventListener("click", (e) => {
-  if (!isPainting) {
+  if (!isPainting && !isEraserSelected) {
     addColorAfterDraw(e);
   }
 });
