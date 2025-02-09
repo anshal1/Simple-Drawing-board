@@ -10,6 +10,7 @@ shapes.forEach((shape) => {
   shape.addEventListener("click", () => {
     const shapename = shape.getAttribute("data-shape");
     currentShape = shapename;
+    isEraserSelected = false;
   });
 });
 
@@ -71,10 +72,39 @@ function drawLine(startX, startY, e, draw = false) {
   }
 }
 
+function drawCircle(startX, startY, e, draw = false) {
+  if (!isPainting) return;
+  const x = startX - toolboxDimesions.width;
+  const y = startY;
+  const radius = Math.abs(e.clientX - startX);
+  if (!draw) {
+    // Preview mode
+    previewctx.save(); // Save the current canvas state
+    previewctx.beginPath();
+    clearPreviewCanvas();
+    previewctx.arc(x, y, radius, 0, 2 * Math.PI);
+    previewctx.stroke();
+    previewctx.restore(); // Restore the original state to remove preview
+  } else {
+    const id = getID();
+    shapesMap.set(id, {
+      x: x - radius,
+      y: y - radius,
+      width: radius * 2,
+      height: radius * 2,
+    });
+    clearPreviewCanvas();
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
+}
+
 function addColorAfterDraw(e) {
   const x = e.clientX - toolboxDimesions.width;
   const y = e.clientY;
-  for (const shape of shapesMap.values()) {
+  for (const key of shapesMap.entries()) {
+    const shape = key[1];
     const shapeX = shape.x;
     const shapeY = shape.y;
     const shapeWidth = shape.width;
@@ -85,9 +115,19 @@ function addColorAfterDraw(e) {
       y >= shapeY &&
       y <= shapeY + shapeHeight
     ) {
-      ctx.clearRect(shapeX, shapeY, shapeWidth, shapeHeight);
+      const shapeName = key[0].split("-")[0];
       ctx.fillStyle = color.value;
-      ctx.fillRect(shapeX, shapeY, shapeWidth, shapeHeight);
+      switch (shapeName) {
+        case "square":
+          ctx.clearRect(shapeX, shapeY, shapeWidth, shapeHeight);
+          ctx.fillRect(shapeX, shapeY, shapeWidth, shapeHeight);
+          break;
+        case "circle":
+          const radius = shape.width / 2;
+          ctx.beginPath();
+          ctx.arc(shape.x + radius, shape.y + radius, radius, 0, 2 * Math.PI);
+          ctx.fill();
+      }
     }
   }
 }

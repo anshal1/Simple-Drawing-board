@@ -53,6 +53,7 @@ toolbox.addEventListener("change", (e) => {
       lineWidth = e.target.value;
       break;
     case "image":
+      isEraserSelected = false;
       DrawImage(e.target.files[0], (element) => {
         ctx.drawImage(element, 0, 0, canvas.width, canvas.height);
       });
@@ -65,6 +66,7 @@ toolbox.addEventListener("click", (e) => {
   switch (name) {
     case "pencil-tool":
       currentShape = null;
+      isEraserSelected = false;
       break;
     case "eraser":
       isEraserSelected = !isEraserSelected;
@@ -79,6 +81,8 @@ clear.addEventListener("click", () => {
 canvas.addEventListener("mousedown", (e) => {
   startX = e.clientX;
   startY = e.clientY;
+  // to prevent the pencil to start from the center of the circle if selecting pencil tool after drawing a circle
+  if (!currentShape) ctx.beginPath();
   if (isEraserSelected) {
     isErasing = true;
   } else {
@@ -94,6 +98,9 @@ function shapesSwithCase(e, draw = false) {
     case "line":
       drawLine(startX, startY, e, draw);
       break;
+    case "circle":
+      drawCircle(startX, startY, e, draw);
+      break;
     default:
       break;
   }
@@ -107,7 +114,8 @@ canvas.addEventListener("mouseup", (e) => {
   if (currentShape) {
     shapesSwithCase(e, true);
     isPainting = false;
-    if (currentShape === "line") {
+    // doing this to prevent the snapping of the line tool to the end of circle when selecting pencil or line too after drawing the circle
+    if (currentShape === "line" || currentShape === "circle") {
       ctx.stroke();
       ctx.beginPath();
     }

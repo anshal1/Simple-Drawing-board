@@ -20,7 +20,7 @@ function clearPreviewCanvas() {
 }
 
 function getID() {
-  return `${currentShape}${Date.now()}`;
+  return `${currentShape}-${Date.now()}`;
 }
 function eraseCanvas(e) {
   clearPreviewCanvas();
