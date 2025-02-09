@@ -25,16 +25,31 @@ function drawSquare(startX, startY, e, draw = false) {
   if (!isPainting) return;
   const width = e.clientX - startX;
   const height = e.clientY - startY;
+  const x = startX - toolboxDimesions.width;
   if (draw) {
+    clearPreviewCanvas();
     const id = `${currentShape}${Date.now()}`;
     // saving the shape so that we can change its color in future if user wants
     shapesMap.set(id, {
-      x: startX - toolboxDimesions.width,
+      x,
       y: startY,
       width,
       height,
     });
-    ctx.fillRect(startX - toolboxDimesions.width, startY, width, height);
+    ctx.fillRect(x, startY, width, height);
+  } else {
+    clearPreviewCanvas();
+    const offset = 5;
+    // showing preview
+    previewctx.fillStyle = "black";
+    previewctx.fillRect(x, startY, width, height);
+    previewctx.fillStyle = "white";
+    previewctx.fillRect(
+      x + offset,
+      startY + offset,
+      width - offset * 2,
+      height - offset * 2
+    );
   }
 }
 
