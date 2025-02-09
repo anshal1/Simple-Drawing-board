@@ -1,73 +1,146 @@
-const canvas = document.querySelector("#drawing-board");
 const clear = document.querySelector("#clear");
-const toolbox = document.querySelector(".toolbox");
-const image = document.querySelector("#image");
 const imagebutton = document.querySelector(".image-button");
 const file_input = document.querySelector(".file");
 const Save = document.querySelector(".save");
 const shapeSelect = document.querySelector("#shape-select");
-const ctx = canvas.getContext("2d");
-const canvasOffsetX = 200;
-const canvasOffsetY = 0;
-const cWidth = window.innerWidth - canvasOffsetX;
-const cHeight = window.innerHeight - canvasOffsetY;
-canvas.width = cWidth;
-canvas.height = cHeight;
-let isPainting = false;
-let lineWidth = 5;
-let startX;
-let startY;
+const board = document.querySelector(".board");
+
+function setDimesions() {
+  const boardDimesions = board.getBoundingClientRect();
+
+  const cWidth = boardDimesions.width;
+  const cHeight = boardDimesions.height;
+  canvas.width = cWidth;
+  previewCanvas.width = cWidth;
+  canvas.height = cHeight;
+  previewCanvas.height = cHeight;
+}
+setDimesions();
+
+// function to draw the pencil
 function draw(e) {
   if (!isPainting) return;
   ctx.lineWidth = lineWidth;
   ctx.lineCap = "round";
-  ctx.lineTo(e.clientX - canvasOffsetX, e.clientY);
+  ctx.lineTo(e.clientX - toolboxDimesions.width, e.clientY);
   ctx.stroke();
 }
+
 function DrawImage(file, cb) {
   if (!file) return;
   const reader = new FileReader();
+  const img = new Image();
   reader.onload = (e) => {
-    image.src = e.target.result;
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
-  image.onload = () => {
-    return cb(image);
+  img.onload = () => {
+    return cb(img);
   };
 }
+
 imagebutton.addEventListener("click", () => {
   file_input.click();
 });
+
 toolbox.addEventListener("change", (e) => {
-  if (e.target.name === "color") {
-    ctx.strokeStyle = e.target.value;
-  }
-  if (e.target.name === "line-width") {
-    lineWidth = e.target.value;
-  }
-  if (e.target.name === "image") {
-    DrawImage(e.target.files[0], (element) => {
-      ctx.drawImage(element, 0, 0, canvas.width, canvas.height);
-    });
+  switch (e.target.name) {
+    case "color":
+      ctx.strokeStyle = e.target.value;
+      ctx.fillStyle = e.target.value;
+      break;
+    case "line-width":
+      lineWidth = e.target.value;
+      break;
+    case "image":
+      isEraserSelected = false;
+      DrawImage(e.target.files[0], (element) => {
+        ctx.drawImage(element, 0, 0, canvas.width, canvas.height);
+      });
+      break;
   }
 });
+
+toolbox.addEventListener("click", (e) => {
+  const name = e.target.name;
+  switch (name) {
+    case "pencil-tool":
+      currentShape = null;
+      isEraserSelected = false;
+      break;
+    case "eraser":
+      isEraserSelected = !isEraserSelected;
+      break;
+  }
+});
+
 clear.addEventListener("click", () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
+
 canvas.addEventListener("mousedown", (e) => {
   startX = e.clientX;
   startY = e.clientY;
-  isPainting = true;
+  // to prevent the pencil to start from the center of the circle if selecting pencil tool after drawing a circle
+  if (!currentShape) ctx.beginPath();
+  if (isEraserSelected) {
+    isErasing = true;
+  } else {
+    isPainting = true;
+  }
 });
+
+function shapesSwithCase(e, draw = false) {
+  switch (currentShape) {
+    case "square":
+      drawSquare(startX, startY, e, draw);
+      break;
+    case "line":
+      drawLine(startX, startY, e, draw);
+      break;
+    case "circle":
+      drawCircle(startX, startY, e, draw);
+      break;
+    default:
+      break;
+  }
+}
+
 canvas.addEventListener("mouseup", (e) => {
-  isPainting = false;
-  ctx.stroke();
-  ctx.beginPath();
+  if (isEraserSelected) {
+    isErasing = false;
+    return;
+  }
+  if (currentShape) {
+    shapesSwithCase(e, true);
+    isPainting = false;
+    // doing this to prevent the snapping of the line tool to the end of circle when selecting pencil or line too after drawing the circle
+    if (currentShape === "line" || currentShape === "circle") {
+      ctx.stroke();
+      ctx.beginPath();
+    }
+  } else {
+    isPainting = false;
+    ctx.stroke();
+    ctx.beginPath();
+  }
 });
+
 canvas.addEventListener("mousemove", (e) => {
-  draw(e);
-  ctx.fillRect = "red";
+  // using isEraserSelected instead of isErasing to show th eraser moving with the cursor
+  if (isEraserSelected) return eraseCanvas(e);
+  if (currentShape) {
+    shapesSwithCase(e, false);
+  } else {
+    draw(e);
+  }
 });
+canvas.addEventListener("click", (e) => {
+  if (!isPainting && !isEraserSelected) {
+    addColorAfterDraw(e);
+  }
+});
+
 Save.addEventListener("click", async () => {
   const data = await canvas.toDataURL("image/png", 1);
   console.log(data);
