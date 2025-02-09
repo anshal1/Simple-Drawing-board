@@ -61,3 +61,7 @@
 .input {
   max-width: 50%;
 }
+
+.board {
+  position: relative;
+}

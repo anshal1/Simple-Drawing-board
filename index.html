@@ -25,7 +25,7 @@
           <span> Line Stroke </span>
           <input type="number" name="line-width" value="5" class="input" />
         </label>
-        <button class="button" name="line-tool">Line Tool</button>
+        <button class="button" name="pencil-tool">Pencil</button>
         <label for="square" class="label">
           <span>Shapes</span>
           <button
@@ -34,6 +34,9 @@
             data-shape="square"
           >
             Square
+          </button>
+          <button class="button shapes-buttons" name="shape" data-shape="line">
+            Line
           </button>
         </label>
         <label for="image" class="label">
@@ -46,6 +49,10 @@
       </div>
       <div class="board">
         <canvas id="drawing-board"></canvas>
+        <canvas
+          id="previewCanvas"
+          style="position: absolute; top: 0; left: 0; pointer-events: none"
+        ></canvas>
       </div>
     </div>
   </body>

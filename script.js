@@ -18,7 +18,9 @@ function setDimesions() {
   const cWidth = boardDimesions.width;
   const cHeight = boardDimesions.height;
   canvas.width = cWidth;
+  previewCanvas.width = cWidth;
   canvas.height = cHeight;
+  previewCanvas.height = cHeight;
 }
 setDimesions();
 
@@ -62,7 +64,7 @@ toolbox.addEventListener("change", (e) => {
 
 toolbox.addEventListener("click", (e) => {
   const name = e.target.name;
-  if (name === "line-tool") {
+  if (name === "pencil-tool") {
     currentShape = null;
   }
 });
@@ -77,16 +79,26 @@ canvas.addEventListener("mousedown", (e) => {
   isPainting = true;
 });
 
+function shapesSwithCase(e, draw = false) {
+  switch (currentShape) {
+    case "square":
+      drawSquare(startX, startY, e, draw);
+      break;
+    case "line":
+      drawLine(startX, startY, e, draw);
+      break;
+    default:
+      break;
+  }
+}
+
 canvas.addEventListener("mouseup", (e) => {
   if (currentShape) {
-    switch (currentShape) {
-      case "square":
-        drawSquare(startX, startY, e, true);
-        isPainting = false;
-        break;
-
-      default:
-        break;
+    shapesSwithCase(e, true);
+    isPainting = false;
+    if (currentShape === "line") {
+      ctx.stroke();
+      ctx.beginPath();
     }
   } else {
     isPainting = false;
@@ -97,12 +109,11 @@ canvas.addEventListener("mouseup", (e) => {
 
 canvas.addEventListener("mousemove", (e) => {
   if (currentShape) {
-    drawSquare(startX, startY, e);
+    shapesSwithCase(e, false);
   } else {
     draw(e);
   }
 });
-
 canvas.addEventListener("click", (e) => {
   if (!isPainting) {
     addColorAfterDraw(e);
