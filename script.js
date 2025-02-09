@@ -103,6 +103,12 @@ canvas.addEventListener("mousemove", (e) => {
   }
 });
 
+canvas.addEventListener("click", (e) => {
+  if (!isPainting) {
+    addColorAfterDraw(e);
+  }
+});
+
 Save.addEventListener("click", async () => {
   const data = await canvas.toDataURL("image/png", 1);
   console.log(data);
