@@ -11,6 +11,7 @@ shapes.forEach((shape) => {
     const shapename = shape.getAttribute("data-shape");
     currentShape = shapename;
     isEraserSelected = false;
+    fillToolSelected = false;
   });
 });
 
@@ -96,7 +97,7 @@ function drawCircle(startX, startY, e, draw = false) {
     clearPreviewCanvas();
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    ctx.stroke();
+    ctx.fill();
   }
 }
 
@@ -127,6 +128,7 @@ function addColorAfterDraw(e) {
           ctx.beginPath();
           ctx.arc(shape.x + radius, shape.y + radius, radius, 0, 2 * Math.PI);
           ctx.fill();
+          break;
       }
     }
   }

@@ -10,9 +10,9 @@
       href="https://fonts.googleapis.com/css2?family=Azeret+Mono:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
-    <script src="./utils.js" defer></script>
-    <script src="./shape.js" defer></script>
-    <script src="./script.js" defer></script>
+    <script src="./scripts/utils.js" defer></script>
+    <script src="./scripts/shape.js" defer></script>
+    <script src="./scripts/script.js" defer></script>
     <title>Drawing Board</title>
   </head>
   <body>
@@ -26,8 +26,12 @@
           <span> Line Stroke </span>
           <input type="number" name="line-width" value="5" class="input" />
         </label>
-        <button class="button" name="pencil-tool">Pencil</button>
-        <button class="button" name="eraser">Eraser</button>
+        <label for="tools" class="label">
+          <span>Tools</span>
+          <button class="button" name="pencil-tool">Pencil</button>
+          <button class="button" name="eraser">Eraser</button>
+          <button class="button" name="fill">Fill</button>
+        </label>
         <label for="square" class="label">
           <span>Shapes</span>
           <button

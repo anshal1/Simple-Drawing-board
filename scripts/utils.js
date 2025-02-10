@@ -12,6 +12,7 @@ let lineWidth = 5;
 let startX;
 let startY;
 let isEraserSelected = false;
+let fillToolSelected = false;
 const EraserWidth = 50;
 const EraserHeigth = 50;
 

@@ -48,6 +48,7 @@ toolbox.addEventListener("change", (e) => {
     case "color":
       ctx.strokeStyle = e.target.value;
       ctx.fillStyle = e.target.value;
+      currentShape = null;
       break;
     case "line-width":
       lineWidth = e.target.value;
@@ -67,9 +68,14 @@ toolbox.addEventListener("click", (e) => {
     case "pencil-tool":
       currentShape = null;
       isEraserSelected = false;
+      fillToolSelected = false;
       break;
     case "eraser":
       isEraserSelected = !isEraserSelected;
+      fillToolSelected = false;
+      break;
+    case "fill":
+      fillToolSelected = !fillToolSelected;
       break;
   }
 });
@@ -111,19 +117,21 @@ canvas.addEventListener("mouseup", (e) => {
     isErasing = false;
     return;
   }
+  if (fillToolSelected) {
+    addColorAfterDraw(e);
+  }
   if (currentShape) {
     shapesSwithCase(e, true);
-    isPainting = false;
     // doing this to prevent the snapping of the line tool to the end of circle when selecting pencil or line too after drawing the circle
     if (currentShape === "line" || currentShape === "circle") {
       ctx.stroke();
       ctx.beginPath();
     }
   } else {
-    isPainting = false;
     ctx.stroke();
     ctx.beginPath();
   }
+  isPainting = false;
 });
 
 canvas.addEventListener("mousemove", (e) => {
@@ -135,15 +143,9 @@ canvas.addEventListener("mousemove", (e) => {
     draw(e);
   }
 });
-canvas.addEventListener("click", (e) => {
-  if (!isPainting && !isEraserSelected) {
-    addColorAfterDraw(e);
-  }
-});
 
 Save.addEventListener("click", async () => {
   const data = await canvas.toDataURL("image/png", 1);
-  console.log(data);
   const anchor = document.createElement("a");
   anchor.download = `${new Date()}.png`;
   anchor.href = data;
