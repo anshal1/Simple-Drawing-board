@@ -42,3 +42,20 @@ function eraseCanvas(e) {
     );
   }
 }
+
+function checkCollision(e, shape) {
+  const x = e.clientX - toolboxDimesions.width;
+  const y = e.clientY;
+  const shapeX = shape.x;
+  const shapeY = shape.y;
+  const shapeWidth = shape.width;
+  const shapeHeight = shape.height;
+  if (
+    x >= shapeX &&
+    x <= shapeX + shapeWidth &&
+    y >= shapeY &&
+    y <= shapeY + shapeHeight
+  )
+    return true;
+  return false;
+}

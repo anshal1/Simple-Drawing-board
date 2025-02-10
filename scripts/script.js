@@ -120,6 +120,10 @@ canvas.addEventListener("mouseup", (e) => {
   if (fillToolSelected) {
     addColorAfterDraw(e);
   }
+  if (e.clientX === startX || e.clientY === startY) {
+    isPainting = false;
+    return;
+  }
   if (currentShape) {
     shapesSwithCase(e, true);
     // doing this to prevent the snapping of the line tool to the end of circle when selecting pencil or line too after drawing the circle

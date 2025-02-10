@@ -29,6 +29,8 @@ function drawSquare(startX, startY, e, draw = false) {
       y: startY,
       width,
       height,
+      color: color.value,
+      selected: false,
     });
     ctx.fillRect(x, startY, width, height);
   } else {
@@ -93,6 +95,8 @@ function drawCircle(startX, startY, e, draw = false) {
       y: y - radius,
       width: radius * 2,
       height: radius * 2,
+      color: color.value,
+      selected: false,
     });
     clearPreviewCanvas();
     ctx.beginPath();
@@ -102,25 +106,65 @@ function drawCircle(startX, startY, e, draw = false) {
 }
 
 function addColorAfterDraw(e) {
-  const x = e.clientX - toolboxDimesions.width;
-  const y = e.clientY;
   for (const key of shapesMap.entries()) {
     const shape = key[1];
     const shapeX = shape.x;
     const shapeY = shape.y;
     const shapeWidth = shape.width;
     const shapeHeight = shape.height;
-    if (
-      x >= shapeX &&
-      x <= shapeX + shapeWidth &&
-      y >= shapeY &&
-      y <= shapeY + shapeHeight
-    ) {
+    if (checkCollision(e, shape)) {
       const shapeName = key[0].split("-")[0];
       ctx.fillStyle = color.value;
       switch (shapeName) {
         case "square":
+          shapesMap.set(key[0], { ...shape, color: color.value });
           ctx.clearRect(shapeX, shapeY, shapeWidth, shapeHeight);
+          ctx.fillRect(shapeX, shapeY, shapeWidth, shapeHeight);
+          break;
+        case "circle":
+          shapesMap.set(key[0], { ...shape, color: color.value });
+          const radius = shape.width / 2;
+          ctx.beginPath();
+          ctx.arc(shape.x + radius, shape.y + radius, radius, 0, 2 * Math.PI);
+          ctx.fill();
+          break;
+      }
+    }
+  }
+}
+
+canvas.addEventListener("dblclick", (e) => {
+  for (const key of shapesMap.entries()) {
+    const shape = key[1];
+    const shapeX = shape.x;
+    const shapeY = shape.y;
+    const shapeWidth = shape.width;
+    const shapeHeight = shape.height;
+    if (checkCollision(e, shape)) {
+      const shapeName = key[0].split("-")[0];
+      const offset = 4;
+      switch (shapeName) {
+        case "square":
+          shapesMap.set(key[0], { ...shape, selected: !shape.selected });
+          const selected = !shape.selected;
+          ctx.clearRect(shapeX, shapeY, shapeWidth, shapeHeight);
+          ctx.fillStyle = "red";
+          if (selected) {
+            ctx.fillRect(
+              shapeX - offset,
+              shapeY - offset,
+              shapeWidth + offset * 2,
+              shapeHeight + offset * 2
+            );
+          } else {
+            ctx.clearRect(
+              shapeX - offset,
+              shapeY - offset,
+              shapeWidth + offset * 2,
+              shapeHeight + offset * 2
+            );
+          }
+          ctx.fillStyle = shape.color;
           ctx.fillRect(shapeX, shapeY, shapeWidth, shapeHeight);
           break;
         case "circle":
@@ -132,4 +176,4 @@ function addColorAfterDraw(e) {
       }
     }
   }
-}
+});
