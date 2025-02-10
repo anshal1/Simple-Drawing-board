@@ -168,8 +168,34 @@ canvas.addEventListener("dblclick", (e) => {
           ctx.fillRect(shapeX, shapeY, shapeWidth, shapeHeight);
           break;
         case "circle":
+          shapesMap.set(key[0], { ...shape, selected: !shape.selected });
+          const circleSeleted = !shape.selected;
           const radius = shape.width / 2;
           ctx.beginPath();
+
+          if (circleSeleted) {
+            ctx.fillStyle = "red";
+            ctx.arc(
+              shape.x + radius,
+              shape.y + radius,
+              radius + offset,
+              0,
+              2 * Math.PI
+            );
+            ctx.fill();
+          } else {
+            ctx.fillStyle = "transparent";
+            ctx.arc(
+              shape.x + radius,
+              shape.y + radius,
+              radius + offset,
+              0,
+              2 * Math.PI
+            );
+            ctx.fill();
+          }
+          ctx.beginPath();
+          ctx.fillStyle = shape.color;
           ctx.arc(shape.x + radius, shape.y + radius, radius, 0, 2 * Math.PI);
           ctx.fill();
           break;
