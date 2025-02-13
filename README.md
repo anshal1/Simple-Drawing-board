@@ -10,10 +10,11 @@
 - Eraser
 - Shapes (Square, Circle)
 - Line tool
+- Fill tool
 - Import image
 - Export as image
 
 ## **Missing Features**
 
-- [ x ] Cannot change the position of circle shape
-- [ x ] Cannot change the postion of line
+- [ ] Cannot change the position of circle shape
+- [ ] Cannot change the postion of line
