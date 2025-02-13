@@ -69,13 +69,16 @@ toolbox.addEventListener("click", (e) => {
       currentShape = null;
       isEraserSelected = false;
       fillToolSelected = false;
+      isSelected = false;
       break;
     case "eraser":
       isEraserSelected = !isEraserSelected;
       fillToolSelected = false;
+      isSelected = false;
       break;
     case "fill":
       fillToolSelected = !fillToolSelected;
+      isSelected = false;
       break;
   }
 });
@@ -87,6 +90,8 @@ clear.addEventListener("click", () => {
 canvas.addEventListener("mousedown", (e) => {
   startX = e.clientX;
   startY = e.clientY;
+  handleSelectUpdate();
+  if (isSelected) return;
   // to prevent the pencil to start from the center of the circle if selecting pencil tool after drawing a circle
   if (!currentShape) ctx.beginPath();
   if (isEraserSelected) {
@@ -113,6 +118,7 @@ function shapesSwithCase(e, draw = false) {
 }
 
 canvas.addEventListener("mouseup", (e) => {
+  if (isSelected) return;
   if (isEraserSelected) {
     isErasing = false;
     return;
@@ -139,6 +145,7 @@ canvas.addEventListener("mouseup", (e) => {
 });
 
 canvas.addEventListener("mousemove", (e) => {
+  if (isSelected) return;
   // using isEraserSelected instead of isErasing to show th eraser moving with the cursor
   if (isEraserSelected) return eraseCanvas(e);
   if (currentShape) {

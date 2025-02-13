@@ -12,6 +12,7 @@ shapes.forEach((shape) => {
     currentShape = shapename;
     isEraserSelected = false;
     fillToolSelected = false;
+    isSelected = false;
   });
 });
 
@@ -82,12 +83,7 @@ function drawCircle(startX, startY, e, draw = false) {
   const radius = Math.abs(e.clientX - startX);
   if (!draw) {
     // Preview mode
-    previewctx.save(); // Save the current canvas state
-    previewctx.beginPath();
-    clearPreviewCanvas();
-    previewctx.arc(x, y, radius, 0, 2 * Math.PI);
-    previewctx.stroke();
-    previewctx.restore(); // Restore the original state to remove preview
+    previewCircle(x, y, radius);
   } else {
     const id = getID();
     shapesMap.set(id, {
@@ -133,6 +129,17 @@ function addColorAfterDraw(e) {
   }
 }
 
+function handleSelectUpdate() {
+  for (const key of shapesMap.entries()) {
+    const shape = key[1];
+    if (!shape.selected) {
+      isSelected = false;
+    } else {
+      isSelected = true;
+    }
+  }
+}
+
 canvas.addEventListener("dblclick", (e) => {
   for (const key of shapesMap.entries()) {
     const shape = key[1];
@@ -142,7 +149,9 @@ canvas.addEventListener("dblclick", (e) => {
     const shapeHeight = shape.height;
     if (checkCollision(e, shape)) {
       const shapeName = key[0].split("-")[0];
-      const offset = 4;
+      isPainting = false;
+      isEraserSelected = false;
+      currentShape = null;
       switch (shapeName) {
         case "square":
           shapesMap.set(key[0], { ...shape, selected: !shape.selected });
@@ -184,7 +193,6 @@ canvas.addEventListener("dblclick", (e) => {
             );
             ctx.fill();
           } else {
-            ctx.fillStyle = "transparent";
             ctx.arc(
               shape.x + radius,
               shape.y + radius,
@@ -201,5 +209,70 @@ canvas.addEventListener("dblclick", (e) => {
           break;
       }
     }
+  }
+});
+
+canvas.addEventListener("mousemove", (e) => {
+  if (!isSelected) return;
+  for (const key of shapesMap.entries()) {
+    const shape = key[1];
+    if (!shape.selected) continue;
+    const shapeName = key[0].split("-")[0];
+    previewctx.fillStyle = "green";
+    clearPreviewCanvas();
+    clearOffSelectBorder(shape.x, shape.y, shape.width, shape.height, ctx);
+    switch (shapeName) {
+      case "square":
+        clearRect(shape.x, shape.y, shape.width, shape.height);
+        previewctx.fillRect(
+          e.clientX - toolboxDimesions.width - shape.width / 2,
+          e.clientY,
+          shape.width,
+          shape.height
+        );
+        break;
+      case "circle":
+        clearRect(shape.x, shape.y, shape.width, shape.height);
+        previewCircle(
+          e.clientX - toolboxDimesions.width - shape.width / 2,
+          e.clientY,
+          shape.width / 2
+        );
+        break;
+    }
+  }
+});
+
+canvas.addEventListener("mouseup", (e) => {
+  if (!isSelected) return;
+  isSelected = false;
+  for (const key of shapesMap.entries()) {
+    const shape = key[1];
+    if (!shape.selected) continue;
+    const shapeName = key[0].split("-")[0];
+    previewctx.fillStyle = shape.color;
+    const x = e.clientX - toolboxDimesions.width - shape.width / 2;
+    switch (shapeName) {
+      case "square":
+        ctx.fillRect(x, e.clientY, shape.width, shape.height);
+        shapesMap.set(key[0], {
+          ...shape,
+          x,
+          y: e.clientY,
+          selected: false,
+        });
+        break;
+      case "circle":
+        ctx.arc(x, e.clientY, shape.width / 2, 0, 2 * Math.PI);
+        ctx.fill();
+        shapesMap.set(key[0], {
+          ...shape,
+          x,
+          y: e.clientY,
+          selected: false,
+        });
+        break;
+    }
+    clearPreviewCanvas();
   }
 });
