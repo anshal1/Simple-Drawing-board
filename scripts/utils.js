@@ -12,8 +12,11 @@ let lineWidth = 5;
 let startX;
 let startY;
 let isEraserSelected = false;
+let fillToolSelected = false;
+let isSelected = false;
 const EraserWidth = 50;
 const EraserHeigth = 50;
+const offset = 4;
 
 function clearPreviewCanvas() {
   previewctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
@@ -40,4 +43,43 @@ function eraseCanvas(e) {
       EraserHeigth
     );
   }
+}
+
+function checkCollision(e, shape) {
+  const x = e.clientX - toolboxDimesions.width;
+  const y = e.clientY;
+  const shapeX = shape.x;
+  const shapeY = shape.y;
+  const shapeWidth = shape.width;
+  const shapeHeight = shape.height;
+  if (
+    x >= shapeX &&
+    x <= shapeX + shapeWidth &&
+    y >= shapeY &&
+    y <= shapeY + shapeHeight
+  )
+    return true;
+  return false;
+}
+
+function clearRect(x, y, width, height) {
+  ctx.clearRect(x, y, width, height);
+}
+
+function previewCircle(x, y, radius) {
+  previewctx.save(); // Save the current canvas state
+  previewctx.beginPath();
+  clearPreviewCanvas();
+  previewctx.arc(x, y, radius, 0, 2 * Math.PI);
+  previewctx.stroke();
+  previewctx.restore(); // Restore the original state to remove preview
+}
+
+function clearOffSelectBorder(x, y, width, height, context) {
+  context.clearRect(
+    x - offset,
+    y - offset,
+    width + offset * 2,
+    height + offset * 2
+  );
 }
